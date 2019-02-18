@@ -1,3 +1,5 @@
+const HDWalletProvider = require('truffle-hdwallet-provider');
+
 module.exports = {
 	networks: {
 		development: {
@@ -6,6 +8,16 @@ module.exports = {
 			network_id: '*',
 			gas: 8000000,
 		},
+		kovan: {
+			provider: function() {
+				return new HDWalletProvider(
+					process.env.SNX_DEPLOY_PRIVATE_KEY,
+					`https://kovan.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+				);
+			},
+			network_id: 42,
+			gas: 7e6,
+		},
 	},
 	mocha: {
 		useColors: true,
@@ -13,7 +25,7 @@ module.exports = {
 	},
 	compilers: {
 		solc: {
-			version: './node_modules/solc', // Version is managed in package.json as an NPM dependency.
+			version: '0.4.25', // Version is managed in package.json as an NPM dependency.
 			settings: {
 				optimizer: {
 					enabled: true,
