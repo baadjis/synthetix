@@ -628,12 +628,6 @@ contract ExchangeRates is Chainlinked, SelfDestructible {
     // There are 5 participating currencies, so we'll declare that clearly.
     bytes4[5] public xdrParticipants;
 
-    uint public usdToSnxPrice;
-    uint public usdToEthPrice;
-    mapping(bytes32 => uint256) private requestedTimestamps;
-    // KOVAN JOB ID for CMC
-    bytes32 constant SPEC_ID = bytes32("cbb45ecb040340389e49b77704184e5a");
-
     //
     // ========== CONSTRUCTOR ==========
 
@@ -686,44 +680,120 @@ contract ExchangeRates is Chainlinked, SelfDestructible {
         internalUpdateRates(_currencyKeys, _newRates, now);
     }
 
+    /* CHAINLINK */
+
+    // KOVAN JOB ID for CMC
+    bytes32 constant SPEC_ID = bytes32("cbb45ecb040340389e49b77704184e5a");
+
+    struct Request {
+      uint256 timestamp;
+      string asset;
+    }
+
+    mapping(bytes32 => Request) private requests;
+    mapping(bytes32 => uint256) private prices;
+
+    function getPriceFromBytes(bytes32 _coin) public view returns (uint256) {
+        return prices[_coin];
+    }
+
+    function getPrice(string _coin) public view returns (uint256) {
+        return prices[keccak256(abi.encodePacked(_coin))];
+    }
+
+    function requestCryptoPrice(string _coin)
+    public
+    onlyOwner
+    {
+        Chainlink.Request memory req = newRequest(SPEC_ID, this, this.fulfill.selector);
+        req.add("sym", _coin);
+        req.add("convert", "USD");
+        string[] memory path = new string[](5);
+        path[0] = "data";
+        path[1] = _coin;
+        path[2] = "quote";
+        path[3] = "USD";
+        path[4] = "price";
+        req.addStringArray("copyPath", path);
+        req.addInt("times", 100000);
+        requests[chainlinkRequest(req, ORACLE_PAYMENT)] = Request(now, _coin);
+    }
+
+    function fulfill(bytes32 _requestId, uint256 _price)
+      public
+      validateTimestamp(_requestId)
+      recordChainlinkFulfillment(_requestId)
+    {
+        bytes32 asset = keccak256(abi.encodePacked(requests[_requestId].asset));
+        uint256 ts = requests[_requestId].timestamp;
+        delete requests[_requestId];
+        prices[asset] = _price;
+        bytes4[] memory ccy = new bytes4[](1);
+        ccy[0] = bytes4(asset);
+        uint[] memory rates = new uint[](1);
+        rates[0] = _price;
+        internalUpdateRates(ccy, rates, ts);
+    }
+
+    function getChainlinkToken() public view returns (address) {
+      return chainlinkToken();
+    }
+
+    function getOracle() public view returns (address) {
+      return oracleAddress();
+    }
+
+    function withdrawLink() public onlyOwner {
+      LinkTokenInterface link = LinkTokenInterface(chainlinkToken());
+      require(link.transfer(msg.sender, link.balanceOf(address(this))), "Unable to transfer");
+    }
+
+    modifier validateTimestamp(bytes32 _requestId) {
+        require(requests[_requestId].timestamp > now - ORACLE_FUTURE_LIMIT, "Request has expired");
+        _;
+    }
+
+
+    // function requestEthPrice(bytes32 _jobId) external onlyOwner {
+    //     Chainlink.Request memory req = newRequest(_jobId, this, this.fulfillEthPrice.selector);
+    //     requestedTimestamps[chainlinkRequest(req, ORACLE_PAYMENT)] = now;
+    // }
+
+    // function fulfillEthPrice(bytes32 _requestId, uint256 _newEthPrice)
+    //     public
+    //     recordChainlinkFulfillment(_requestId)
+    //     validateTimestamp(_requestId)
+    // {
+    //     usdToEthPrice = _newEthPrice;
+    //     bytes4[] memory ccy = new bytes4[](1);
+    //     ccy[0] = "ETH";
+    //     uint[] memory rates = new uint[](1);
+    //     rates[0] = _newEthPrice;
+    //     internalUpdateRates(ccy, rates, requestedTimestamps[_requestId]);
+    // }
+
+    // function requestSnxPrice(bytes32 _jobId) external onlyOwner {
+    //     Chainlink.Request memory req = newRequest(_jobId, this, this.fulfillSnxPrice.selector);
+    //     requestedTimestamps[chainlinkRequest(req, ORACLE_PAYMENT)] = now;
+    // }
+
+    // function fulfillSnxPrice(bytes32 _requestId, uint256 _newSynthetixPrice)
+    //     public
+    //     recordChainlinkFulfillment(_requestId)
+    //     validateTimestamp(_requestId)
+    // {
+    //     usdToSnxPrice = _newSynthetixPrice;
+    //     bytes4[] memory ccy = new bytes4[](1);
+    //     ccy[0] = "SNX";
+    //     uint[] memory rates = new uint[](1);
+    //     rates[0] = _newSynthetixPrice;
+
+    //     internalUpdateRates(ccy, rates, requestedTimestamps[_requestId]);
+    // }
+
     /* ========== SETTERS ========== */
 
-    function requestEthPrice(bytes32 _jobId) external onlyOwner {
-        Chainlink.Request memory req = newRequest(_jobId, this, this.fulfillEthPrice.selector);
-        requestedTimestamps[chainlinkRequest(req, ORACLE_PAYMENT)] = now;
-    }
 
-    function fulfillEthPrice(bytes32 _requestId, uint256 _newEthPrice)
-        public
-        recordChainlinkFulfillment(_requestId)
-        validateTimestamp(_requestId)
-    {
-        usdToEthPrice = _newEthPrice;
-        bytes4[] memory ccy = new bytes4[](1);
-        ccy[0] = "ETH";
-        uint[] memory rates = new uint[](1);
-        rates[0] = _newEthPrice;
-        internalUpdateRates(ccy, rates, requestedTimestamps[_requestId]);
-    }
-
-    function requestSnxPrice(bytes32 _jobId) external onlyOwner {
-        Chainlink.Request memory req = newRequest(_jobId, this, this.fulfillSnxPrice.selector);
-        requestedTimestamps[chainlinkRequest(req, ORACLE_PAYMENT)] = now;
-    }
-
-    function fulfillSnxPrice(bytes32 _requestId, uint256 _newSynthetixPrice)
-        public
-        recordChainlinkFulfillment(_requestId)
-        validateTimestamp(_requestId)
-    {
-        usdToSnxPrice = _newSynthetixPrice;
-        bytes4[] memory ccy = new bytes4[](1);
-        ccy[0] = "SNX";
-        uint[] memory rates = new uint[](1);
-        rates[0] = _newSynthetixPrice;
-
-        internalUpdateRates(ccy, rates, requestedTimestamps[_requestId]);
-    }
 
     /**
      * @notice Set the rates stored in this contract
@@ -948,13 +1018,6 @@ contract ExchangeRates is Chainlinked, SelfDestructible {
     modifier onlyOracle
     {
         require(msg.sender == ourOracle, "Only the oracle can perform this action");
-        _;
-    }
-
-    // This modifier changes the contract's state by deleteing the requestedTimestamps value for the given request
-    modifier validateTimestamp(bytes32 _requestId) {
-        require(requestedTimestamps[_requestId] > now - ORACLE_FUTURE_LIMIT, "Request has expired");
-        delete requestedTimestamps[_requestId];
         _;
     }
 

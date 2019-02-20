@@ -1,4 +1,5 @@
 const HDWalletProvider = require('truffle-hdwallet-provider');
+require('dotenv').config();
 
 module.exports = {
 	networks: {
@@ -7,6 +8,7 @@ module.exports = {
 			port: 8545,
 			network_id: '*',
 			gas: 8000000,
+			from: process.env.SNX_DEPLOY_PUBLIC_KEY,
 		},
 		kovan: {
 			provider: function() {
@@ -17,6 +19,13 @@ module.exports = {
 			},
 			network_id: 42,
 			gas: 7e6,
+			from: process.env.SNX_DEPLOY_PUBLIC_KEY,
+		},
+		tenderly: {
+			host: '127.0.0.1',
+			port: 9545,
+			network_id: '*',
+			gasPrice: 0,
 		},
 	},
 	mocha: {

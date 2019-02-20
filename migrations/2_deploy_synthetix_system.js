@@ -22,8 +22,11 @@ module.exports = async function(deployer, network, accounts) {
 
 	console.log(accounts);
 
-	const deployerAccount = process.env.SNX_DEPLOY_PUBLIC_KEY;
+	const deployerAccount = accounts[0];
+	// for kovan
+	// const deployerAccount = process.env.SNX_DEPLOY_PUBLIC_KEY;
 	const owner = deployerAccount;
+	// for kovan
 	const oracle = owner; // clearly wrong
 
 	// Note: This deployment script is not used on mainnet, it's only for testing deployments.
