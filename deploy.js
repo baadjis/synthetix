@@ -329,6 +329,12 @@ const verifyContracts = async () => {
 	for (const contract of Object.keys(deployedContracts)) {
 		// Check if this contract already has been verified.
 
+		// ExchangeRates is unable to verify via API
+		if (contract === 'ExchangeRates') {
+			tableData.push([deployedContracts[contract].options.address, 'Skipped Verification']);
+			continue;
+		}
+
 		let result = await axios.get(etherscanUrl, {
 			params: {
 				module: 'contract',
@@ -644,14 +650,15 @@ const deploy = async () => {
 			await tokenProxy.methods.setTarget(synth.options.address).send(sendParameters());
 		}
 
-		// if (
-		// 	settings.contracts.Synth[currencyKey].action === 'deploy' ||
-		// 	settings.contracts.Synthetix.action === 'deploy'
-		// ) {
-		// 	console.log(`Adding ${currencyKey} to Synthetix contract...`);
+		// Comment out if deploying on mainnet - Needs to be owner of Synthetix contract
+		if (
+			settings.contracts.Synth[currencyKey].action === 'deploy' ||
+			settings.contracts.Synthetix.action === 'deploy'
+		) {
+			console.log(`Adding ${currencyKey} to Synthetix contract...`);
 
-		// 	await synthetix.methods.addSynth(synth.options.address).send(sendParameters());
-		// }
+			await synthetix.methods.addSynth(synth.options.address).send(sendParameters());
+		}
 	}
 
 	await deployContract('Depot', [
