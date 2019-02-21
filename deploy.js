@@ -714,6 +714,8 @@ const deploy = async () => {
 	) {
 		console.log('Setting escrow on Synthetix...');
 		await synthetix.methods.setEscrow(synthetixEscrow.options.address).send(sendParameters());
+
+		await synthetixEscrow.methods.setSynthetix(synthetix.options.address).send(sendParameters());
 	}
 
 	if (
