@@ -30,7 +30,7 @@ const settings = {
 	network: 'ropsten',
 	contractDeploymentGasLimit: 8000000,
 	methodCallGasLimit: 150000,
-	gasPrice: '1.0', // In gwei
+	gasPrice: '10.0', // In gwei
 	saveFlattenedContracts: true,
 	flattenedContractsFolder: './flattened-contracts',
 	verifyContracts: true,
@@ -52,6 +52,8 @@ const settings = {
 		'sBRL',
 		'sNZD',
 		'sPLN',
+		'sXAG',
+		'sBTC',
 	],
 	contracts: {
 		Depot: {
@@ -67,7 +69,8 @@ const settings = {
 			existingInstance: '0x0E3dFdD58bC0E88443877135aF085aa111df06E3',
 		},
 		Synthetix: {
-			action: 'deploy',
+			action: 'use-existing',
+			existingInstance: '0x5B2655ACD8E1977d69Beb980FbD73B6efAd87A21',
 		},
 		SynthetixEscrow: {
 			action: 'use-existing',
@@ -115,34 +118,44 @@ const settings = {
 				existingInstance: '0x369E54eC039D9C05E0dc251e2FD964bD9bD08931',
 			},
 			sCNY: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x9fC8395BF32CE83BcE9b860330F4642E32f023Ac',
 			},
 			sSGD: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x4eD2770b404d0A1BfecDC6385ec901608A19005E',
 			},
 			sCAD: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x2DdCAae7AE1fC36F75e1342F4daadf7f0d6d75d1',
 			},
 			sRUB: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x31F2AaA06E741EDC5fa8D264133d0dd96133f133',
 			},
 			sINR: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x4a06204e4962ec2d110798e2bF9c21e70803e40d',
 			},
 			sBRL: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x34bE7aFbc34257294dbFEc6a9EA5211164388182',
 			},
 			sNZD: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xcaDA99c31c4FBC3710CcB435ED2767980812F731',
 			},
 			sPLN: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xcdaDc6Bb0DC9e82919345Db71fB2019C9a90afCD',
 			},
 			sXAG: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x55f14661902d437582B2de831efd6BAF7b0da6bF',
 			},
 			sBTC: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xaA31cADdc8B9763c3F299944fb09Ee57c4878bb5',
 			},
 		},
 		Proxy: {
@@ -191,34 +204,44 @@ const settings = {
 				existingInstance: '0x39dDDddacb1F97aD4230cD4a09D560c0345980c1',
 			},
 			sCNY: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xbB19Eb27e9828451C96e5bE47f36650D47a2D570',
 			},
 			sSGD: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x259341C37Cbe6b59d68F0C144B040B29535caad6',
 			},
 			sCAD: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xCB953F948fdc149390b0f399848917Bc700E43b8',
 			},
 			sRUB: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x32E2fd76697E9232920c0c1121d644e05e19dBf8',
 			},
 			sINR: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xB71295ab00b98473D649e64153087182975eB3B6',
 			},
 			sBRL: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x7e9Fe7C590AA75300Dd80cf6Bf2d251Da7bBFc22',
 			},
 			sNZD: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x47334b13A42C1722d3C94Fcc274418d99A10510e',
 			},
 			sPLN: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x061b46AB2cdFc23DF7cCE43B785F0782f4D596Fc',
 			},
 			sXAG: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xc5C9c7d6Ea3DD209953D9135d85bac46c3B94f57',
 			},
 			sBTC: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xF9cc6AEd3153E8f173Be5E1E9855304Cd3460dA5',
 			},
 		},
 		SafeDecimalMath: {
@@ -267,34 +290,44 @@ const settings = {
 				existingInstance: '0xCD57cc0daD907F24fd564861acAD48bb039A4baA',
 			},
 			sCNY: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xEBb30373dDdF51e609F5a487f122a03E0a9F8B77',
 			},
 			sSGD: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x8279c1853a7EdDe28e8f041EF78B8c1723e224c9',
 			},
 			sCAD: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xa45Ff4f7256c5Be4031E34BEd7E2C8db5bD78bBb',
 			},
 			sRUB: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x95D31A99f94a5FE3Dd67B6ad9f2654987a307E1D',
 			},
 			sINR: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xc6A2dEcDd4636f79f7856f9f3a1358CaAB31115c',
 			},
 			sBRL: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x97196996388d13D6C67eB7f6AD6F4aB884cC6976',
 			},
 			sNZD: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xD010C3f3799C2548f39274376C04919d79e8669a',
 			},
 			sPLN: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0xec93Ff9A05eCe819Bd6446c666Ee5367dB3615AA',
 			},
 			sXAG: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x519a8061ea62C3150Bcd82e267159FD75d9194cb',
 			},
 			sBTC: {
-				action: 'deploy',
+				action: 'use-existing',
+				existingInstance: '0x7966a30aae7Cc6dBC44537051df1395F12BEff4A',
 			},
 		},
 	},
