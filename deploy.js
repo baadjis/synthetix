@@ -34,7 +34,25 @@ const settings = {
 	saveFlattenedContracts: true,
 	flattenedContractsFolder: './flattened-contracts',
 	verifyContracts: true,
-	synths: ['XDR', 'sUSD', 'sEUR', 'sJPY', 'sAUD', 'sKRW', 'sXAU', 'sGBP', 'sCHF'],
+	synths: [
+		'XDR',
+		'sUSD',
+		'sEUR',
+		'sJPY',
+		'sAUD',
+		'sKRW',
+		'sXAU',
+		'sGBP',
+		'sCHF',
+		'sCNY',
+		'sSGD',
+		'sCAD',
+		'sRUB',
+		'sINR',
+		'sBRL',
+		'sNZD',
+		'sPLN',
+	],
 	contracts: {
 		Depot: {
 			action: 'use-existing',
@@ -49,8 +67,7 @@ const settings = {
 			existingInstance: '0x0E3dFdD58bC0E88443877135aF085aa111df06E3',
 		},
 		Synthetix: {
-			action: 'use-existing',
-			existingInstance: '0x00d0Cbf196097Ddb3B29947729f2105ef9b399Bd',
+			action: 'deploy',
 		},
 		SynthetixEscrow: {
 			action: 'use-existing',
@@ -96,6 +113,36 @@ const settings = {
 			sCHF: {
 				action: 'use-existing',
 				existingInstance: '0x369E54eC039D9C05E0dc251e2FD964bD9bD08931',
+			},
+			sCNY: {
+				action: 'deploy',
+			},
+			sSGD: {
+				action: 'deploy',
+			},
+			sCAD: {
+				action: 'deploy',
+			},
+			sRUB: {
+				action: 'deploy',
+			},
+			sINR: {
+				action: 'deploy',
+			},
+			sBRL: {
+				action: 'deploy',
+			},
+			sNZD: {
+				action: 'deploy',
+			},
+			sPLN: {
+				action: 'deploy',
+			},
+			sXAG: {
+				action: 'deploy',
+			},
+			sBTC: {
+				action: 'deploy',
 			},
 		},
 		Proxy: {
@@ -143,6 +190,36 @@ const settings = {
 				action: 'use-existing',
 				existingInstance: '0x39dDDddacb1F97aD4230cD4a09D560c0345980c1',
 			},
+			sCNY: {
+				action: 'deploy',
+			},
+			sSGD: {
+				action: 'deploy',
+			},
+			sCAD: {
+				action: 'deploy',
+			},
+			sRUB: {
+				action: 'deploy',
+			},
+			sINR: {
+				action: 'deploy',
+			},
+			sBRL: {
+				action: 'deploy',
+			},
+			sNZD: {
+				action: 'deploy',
+			},
+			sPLN: {
+				action: 'deploy',
+			},
+			sXAG: {
+				action: 'deploy',
+			},
+			sBTC: {
+				action: 'deploy',
+			},
 		},
 		SafeDecimalMath: {
 			action: 'use-existing',
@@ -189,6 +266,36 @@ const settings = {
 				action: 'use-existing',
 				existingInstance: '0xCD57cc0daD907F24fd564861acAD48bb039A4baA',
 			},
+			sCNY: {
+				action: 'deploy',
+			},
+			sSGD: {
+				action: 'deploy',
+			},
+			sCAD: {
+				action: 'deploy',
+			},
+			sRUB: {
+				action: 'deploy',
+			},
+			sINR: {
+				action: 'deploy',
+			},
+			sBRL: {
+				action: 'deploy',
+			},
+			sNZD: {
+				action: 'deploy',
+			},
+			sPLN: {
+				action: 'deploy',
+			},
+			sXAG: {
+				action: 'deploy',
+			},
+			sBTC: {
+				action: 'deploy',
+			},
 		},
 	},
 };
@@ -208,6 +315,7 @@ const { table } = require('table');
 const Web3 = require('web3');
 
 // Configure Web3 so we can sign transactions and connect to the network.
+// Consider checking settings.network === 'mainnet' and setup web3 to use hardware wallet
 const web3 = new Web3(
 	new Web3.providers.HttpProvider(`https://${settings.network}.infura.io/${process.env.INFURA_KEY}`)
 );
