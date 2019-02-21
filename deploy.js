@@ -804,7 +804,7 @@ const deploy = async () => {
 		}
 	}
 
-	await deployContract('Depot', [
+	const depot = await deployContract('Depot', [
 		account,
 		account,
 		synthetix.options.address,
@@ -814,6 +814,16 @@ const deploy = async () => {
 		web3.utils.toWei('500'),
 		web3.utils.toWei('.10'),
 	]);
+
+	// Comment out if deploying on mainnet - Needs to be owner of Depot contract
+	if (
+		settings.contracts.Synthetix.action === 'deploy' &&
+		settings.contracts.Depot.action !== 'deploy'
+	) {
+		console.log(`setting synthetix on depot contract...`);
+
+		await depot.methods.setSynthetix(synthetix.options.address).send(sendParameters());
+	}
 
 	console.log();
 	console.log();
