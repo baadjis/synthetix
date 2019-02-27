@@ -8,6 +8,8 @@ const sleep = ms =>
 		setTimeout(resolve, ms);
 	});
 
+const token = 'ETH';
+
 module.exports = async function(cb) {
 	try {
 		const er = await ExchangeRates.deployed();
@@ -24,12 +26,15 @@ module.exports = async function(cb) {
 		// const txn = await er.requestCoinMarketCapPrice('BTC');
 		// console.log(txn);
 
-		const txn = await er.requestCryptoPrice('SNX');
-		console.log(txn);
-		await sleep(10000);
+		// const txn = await er.requestCryptoPrice(token);
+		// console.log(txn);
+		// await sleep(10000);
 
-		const price = await er.getPrice('SNX');
+		const price = await er.getPrice(token);
 		console.log(price.toString());
+
+		const p = await er.rateForCurrencyString(token);
+		console.log(p.toString());
 	} catch (err) {
 		return cb(err);
 	}

@@ -932,6 +932,14 @@ contract ExchangeRates is Chainlinked, SelfDestructible {
         return rates[currencyKey];
     }
 
+    function rateForCurrencyString(string currencyKey)
+        public
+        view
+        returns (uint)
+    {
+        return rates[bytes4(keccak256(abi.encodePacked(currencyKey)))];
+    }
+
     /**
      * @notice Retrieve the rates for a list of currencies
      */
