@@ -1,7 +1,6 @@
 const ExchangeRates = artifacts.require('ExchangeRates');
 const Escrow = artifacts.require('SynthetixEscrow');
 const FeePool = artifacts.require('FeePool');
-const SupplySchedule = artifacts.require('SupplySchedule');
 const Synthetix = artifacts.require('Synthetix');
 const SynthetixState = artifacts.require('SynthetixState');
 const Synth = artifacts.require('Synth');
@@ -30,10 +29,9 @@ contract('Synthetix', async function(accounts) {
 		account4,
 		account5,
 		account6,
-		account7,
 	] = accounts;
 
-	let synthetix, synthetixState, exchangeRates, feePool, supplySchedule, sUSDContract, sAUDContract;
+	let synthetix, synthetixState, exchangeRates, feePool, sUSDContract, sAUDContract;
 
 	beforeEach(async function() {
 		// Save ourselves from having to await deployed() in every single test.
@@ -41,7 +39,6 @@ contract('Synthetix', async function(accounts) {
 		// contract interfaces to prevent test bleed.
 		exchangeRates = await ExchangeRates.deployed();
 		feePool = await FeePool.deployed();
-		supplySchedule = await SupplySchedule.deployed();
 
 		synthetix = await Synthetix.deployed();
 		synthetixState = await SynthetixState.at(await synthetix.synthetixState());
@@ -73,7 +70,6 @@ contract('Synthetix', async function(accounts) {
 			account4,
 			account5,
 			account6,
-			account7,
 			{
 				from: deployerAccount,
 			}
@@ -85,7 +81,6 @@ contract('Synthetix', async function(accounts) {
 		assert.equal(await instance.owner(), account4);
 		assert.equal(await instance.exchangeRates(), account5);
 		assert.equal(await instance.feePool(), account6);
-		assert.equal(await instance.supplySchedule(), account7);
 	});
 
 	it('should allow adding a Synth contract', async function() {
@@ -1984,7 +1979,7 @@ contract('Synthetix', async function(accounts) {
 	});
 
 	// Inflationary supply of Synthetix
-	it('should allow synthetix contract to mint new supply based on inflationary schedule', async function() {
+	it.only('should allow synthetix contract to mint new supply based on inflationary schedule', async function() {
 		// Issue
 		const weeklyIssuance = (75000000 / 52).toPrecision(18);
 		const expectedSupplyToMint = toUnit(weeklyIssuance);
@@ -2000,7 +1995,7 @@ contract('Synthetix', async function(accounts) {
 		const newTotalSupply = await synthetix.totalSupply();
 
 		// Expect supply schedule is updated with new values
-		const currentSchedule = await supplySchedule.getCurrentSchedule();
+		const currentSchedule = await synthetix.getCurrentSchedule();
 
 		console.log('supplySchedule', currentSchedule);
 		assert.bnEqual(newTotalSupply, existingSupply.add(web3.utils.toBN(expectedSupplyToMint)));

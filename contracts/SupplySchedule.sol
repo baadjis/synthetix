@@ -32,13 +32,11 @@ pragma solidity 0.4.25;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./SafeDecimalMath.sol";
-import "./Owned.sol";
-import "./Synthetix.sol";
 
 /**
  * @title SupplySchedule contract
  */
-contract SupplySchedule is Owned {
+contract SupplySchedule {
     using SafeMath for uint;
     using SafeDecimalMath for uint;
 
@@ -66,8 +64,6 @@ contract SupplySchedule is Owned {
     // Reward for minter calling mint
     uint public minterReward;
 
-    Synthetix public synthetix;
-
     uint constant SECONDS_IN_YEAR = 60 * 60 * 24 * 365;
 
     uint public constant START_DATE = 1520899200; // 2018-03-13T00:00:00+00:00
@@ -81,8 +77,7 @@ contract SupplySchedule is Owned {
     uint8 constant public INFLATION_SCHEDULES_LENGTH = 6;
     ScheduleData[INFLATION_SCHEDULES_LENGTH] public schedules;
 
-    constructor(address _owner)
-        Owned(_owner)
+    constructor()
         public
     {
         // ScheduleData(totalSupply, startPeriod, endPeriod, totalSupplyMinted)
@@ -96,13 +91,6 @@ contract SupplySchedule is Owned {
     }
 
     // ========== SETTERS ========== */
-    function setSynthetix(Synthetix _synthetix)
-        external
-        onlyOwner
-    {
-        synthetix = _synthetix;
-        // emit event
-    }
 
     // ========== VIEWS ==========
     function getInflationSchedule(uint index)
@@ -149,7 +137,7 @@ contract SupplySchedule is Owned {
     }
 
     function isMintable()
-        external
+        public
         view
         returns (bool)
     {
@@ -190,25 +178,6 @@ contract SupplySchedule is Owned {
         return schedules[currentSchedule - 1].totalSupply.sub(schedules[currentSchedule - 1].totalSupplyMinted);
     }
     // ========== MUTATIVE FUNCTIONS ==========
-    function updateMintValues()
-        external
-        onlySynthetix
-        returns (bool)
-    {
-        uint currentIndex = getCurrentSchedule();
-
-        // Update schedule.totalSupplyMinted for currentSchedule
-        schedules[currentIndex].totalSupplyMinted = schedules[currentIndex].totalSupplyMinted.add(mintableSupply());
-        // Lastly update minted event to track minted values
-        lastMintEvent = now;
-
-        return true;
-    }
 
     // ========== MODIFIERS ==========
-
-    modifier onlySynthetix() {
-        require(msg.sender == address(synthetix), "Only the synthetix contract can perform this action");
-        _;
-    }
 }
