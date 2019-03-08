@@ -34,7 +34,7 @@ import "./SelfDestructible.sol";
 import "./Pausable.sol";
 import "./SafeDecimalMath.sol";
 import "./Synthetix.sol";
-import "./Synth.sol";
+import "./ISynth.sol";
 import "./FeePool.sol";
 
 /**
@@ -46,7 +46,7 @@ contract Depot is SelfDestructible, Pausable {
 
     /* ========== STATE VARIABLES ========== */
     Synthetix public synthetix;
-    Synth public synth;
+    ISynth public synth;
     FeePool public feePool;
 
     // Address where the ether and Synths raised for selling SNX is transfered to
@@ -130,7 +130,7 @@ contract Depot is SelfDestructible, Pausable {
 
         // Other contracts needed
         Synthetix _synthetix,
-        Synth _synth,
+        ISynth _synth,
 		FeePool _feePool,
 
         // Oracle values - Allows for price updates
@@ -183,7 +183,7 @@ contract Depot is SelfDestructible, Pausable {
      * @notice Set the Synth contract that the issuance controller uses to issue Synths.
      * @param _synth The new synth contract target
      */
-    function setSynth(Synth _synth)
+    function setSynth(ISynth _synth)
         external
         onlyOwner
     {
@@ -683,7 +683,7 @@ contract Depot is SelfDestructible, Pausable {
 
     event FundsWalletUpdated(address newFundsWallet);
     event OracleUpdated(address newOracle);
-    event SynthUpdated(Synth newSynthContract);
+    event SynthUpdated(ISynth newSynthContract);
     event SynthetixUpdated(Synthetix newSynthetixContract);
     event PriceStalePeriodUpdated(uint priceStalePeriod);
     event PricesUpdated(uint newEthPrice, uint newSynthetixPrice, uint timeSent);

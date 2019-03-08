@@ -120,10 +120,10 @@ pragma solidity 0.4.25;
 
 
 import "./ExternStateToken.sol";
-import "./Synth.sol";
+import "./ISynth.sol";
 import "./SynthetixState.sol";
 import "./TokenState.sol";
-import "./SupplySchedule.sol";
+//import "./SupplySchedule.sol";
 import "./IExchangeRates.sol";
 import "./IFeePool.sol";
 import "./ISynthetixEscrow.sol"; 
@@ -133,13 +133,14 @@ import "./ISynthetixEscrow.sol";
  * @notice The Synthetix contracts not only facilitates transfers, exchanges, and tracks balances,
  * but it also computes the quantity of fees each synthetix holder is entitled to.
  */
-contract Synthetix is ExternStateToken, SupplySchedule {
+//contract Synthetix is ExternStateToken, SupplySchedule {
+contract Synthetix is ExternStateToken {
 
     // ========== STATE VARIABLES ==========
 
     // Available Synths which can be used with the system
-    Synth[] public availableSynths;
-    mapping(bytes4 => Synth) public synths;
+    ISynth[] public availableSynths;
+    mapping(bytes4 => ISynth) public synths;
 
     IFeePool public feePool;
     ISynthetixEscrow public escrow;
@@ -164,7 +165,6 @@ contract Synthetix is ExternStateToken, SupplySchedule {
         address _owner, IExchangeRates _exchangeRates, IFeePool _feePool
     )
         ExternStateToken(_proxy, _tokenState, TOKEN_NAME, TOKEN_SYMBOL, SYNTHETIX_SUPPLY, DECIMALS, _owner)
-        SupplySchedule()
         public
     {
         synthetixState = _synthetixState;
@@ -178,13 +178,13 @@ contract Synthetix is ExternStateToken, SupplySchedule {
      * @notice Add an associated Synth contract to the Synthetix system
      * @dev Only the contract owner may call this.
      */
-    function addSynth(Synth synth)
+    function addSynth(ISynth synth)
         external
         optionalProxy_onlyOwner
     {
         bytes4 currencyKey = synth.currencyKey();
 
-        require(synths[currencyKey] == Synth(0), "Synth already exists");
+        require(synths[currencyKey] == ISynth(0), "Synth already exists");
 
         availableSynths.push(synth);
         synths[currencyKey] = synth;
@@ -914,25 +914,25 @@ contract Synthetix is ExternStateToken, SupplySchedule {
         }
     }
 
-    function mint()
-        external
-        returns (bool)
-    {
-        require(isMintable(), "Last mint event is less than mintPeriodDuration");
-
-        uint supplyToMint = mintableSupply();
-        require(supplyToMint > 0, "No supply is mintable");
-
-        // Set minted SNX balance to feePool's balance
-        tokenState.setBalanceOf(feePool, tokenState.balanceOf(feePool).add(supplyToMint));
-        totalSupply = totalSupply.add(supplyToMint);
-
-        // update mint values on supplySchedule[currentSchedule]
-        uint currentSchedule = getCurrentSchedule();
-        // Update schedule.totalSupplyMinted for currentSchedule
-        schedules[currentSchedule].totalSupplyMinted = schedules[currentSchedule].totalSupplyMinted.add(supplyToMint);
-        lastMintEvent = now;
-    }
+//    function mint()
+//        external
+//        returns (bool)
+//    {
+//        require(isMintable(), "Last mint event is less than mintPeriodDuration");
+//
+//        uint supplyToMint = mintableSupply();
+//        require(supplyToMint > 0, "No supply is mintable");
+//
+//        // Set minted SNX balance to feePool's balance
+//        tokenState.setBalanceOf(feePool, tokenState.balanceOf(feePool).add(supplyToMint));
+//        totalSupply = totalSupply.add(supplyToMint);
+//
+//        // update mint values on supplySchedule[currentSchedule]
+//        uint currentSchedule = getCurrentSchedule();
+//        // Update schedule.totalSupplyMinted for currentSchedule
+//        schedules[currentSchedule].totalSupplyMinted = schedules[currentSchedule].totalSupplyMinted.add(supplyToMint);
+//        lastMintEvent = now;
+//    }
 
     // ========== MODIFIERS ==========
 
