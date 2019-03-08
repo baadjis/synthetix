@@ -120,10 +120,11 @@ pragma solidity 0.4.25;
 
 
 import "./ExternStateToken.sol";
-import "./Synth.sol";
 import "./SynthetixState.sol";
 import "./TokenState.sol";
 import "./SupplySchedule.sol";
+
+import "./ISynth.sol";
 import "./IExchangeRates.sol";
 import "./IFeePool.sol";
 import "./ISynthetixEscrow.sol"; 
@@ -138,8 +139,8 @@ contract Synthetix is ExternStateToken {
     // ========== STATE VARIABLES ==========
 
     // Available Synths which can be used with the system
-    Synth[] public availableSynths;
-    mapping(bytes4 => Synth) public synths;
+    ISynth[] public availableSynths;
+    mapping(bytes4 => ISynth) public synths;
 
     IFeePool public feePool;
     ISynthetixEscrow public escrow;
@@ -179,13 +180,13 @@ contract Synthetix is ExternStateToken {
      * @notice Add an associated Synth contract to the Synthetix system
      * @dev Only the contract owner may call this.
      */
-    function addSynth(Synth synth)
+    function addSynth(ISynth synth)
         external
         optionalProxy_onlyOwner
     {
         bytes4 currencyKey = synth.currencyKey();
 
-        require(synths[currencyKey] == Synth(0), "Synth already exists");
+        require(synths[currencyKey] == address(0), "Synth already exists");
 
         availableSynths.push(synth);
         synths[currencyKey] = synth;

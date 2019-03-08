@@ -26,7 +26,8 @@ pragma solidity 0.4.25;
 
 import "./SafeDecimalMath.sol";
 import "./Owned.sol";
-import "./Synthetix.sol";
+import "./IFeePool.sol";
+import "./IERC20.sol";
 
 /**
  * @title A contract to hold escrowed SNX and free them at given schedules.
@@ -36,9 +37,9 @@ contract RewardEscrow is Owned {
     using SafeMath for uint;
 
     /* The corresponding Synthetix contract. */
-    Synthetix public synthetix;
+    IERC20 public synthetix;
 
-    FeePool public feePool;
+    IFeePool public feePool;
 
     /* Lists of (timestamp, quantity) pairs per account, sorted in ascending time order.
      * These are the times at which each given quantity of SNX vests. */
@@ -63,7 +64,7 @@ contract RewardEscrow is Owned {
 
     /* ========== CONSTRUCTOR ========== */
 
-    constructor(address _owner, Synthetix _synthetix, FeePool _feePool)
+    constructor(address _owner, IERC20 _synthetix, IFeePool _feePool)
     Owned(_owner)
     public
     {
@@ -77,7 +78,7 @@ contract RewardEscrow is Owned {
     /**
      * @notice set the synthetix contract address as we need to transfer SNX when the user vests
      */
-    function setSynthetix(Synthetix _synthetix)
+    function setSynthetix(IERC20 _synthetix)
     external
     onlyOwner
     {
@@ -89,7 +90,7 @@ contract RewardEscrow is Owned {
      * @notice set the FeePool contract as it is the only authority to be able to call 
      * appendVestingEntry with the onlyFeePool modifer
      */
-    function setFeePool(FeePool _feePool)
+    function setFeePool(IFeePool _feePool)
         external
         onlyOwner
     {
