@@ -4,5 +4,5 @@ pragma solidity 0.4.25;
  * @title SynthetixEscrow interface
  */
 interface ISynthetixEscrow {
-    function balanceOf(address account) external view returns (uint);
+    function balanceOf(address account) public view returns (uint);
 }

@@ -134,7 +134,7 @@ import "./ISynthetixEscrow.sol";
  * @notice The Synthetix contracts not only facilitates transfers, exchanges, and tracks balances,
  * but it also computes the quantity of fees each synthetix holder is entitled to.
  */
-contract Synthetix is ExternStateToken {
+contract Synthetix is ExternStateToken, SupplySchedule {
 
     // ========== STATE VARIABLES ==========
 
@@ -146,7 +146,6 @@ contract Synthetix is ExternStateToken {
     ISynthetixEscrow public escrow;
     IExchangeRates public exchangeRates;
     SynthetixState public synthetixState;
-    SupplySchedule public supplySchedule;
 
     uint constant SYNTHETIX_SUPPLY = 1e8 * SafeDecimalMath.unit();
     string constant TOKEN_NAME = "Synthetix Network Token";
@@ -163,15 +162,15 @@ contract Synthetix is ExternStateToken {
      * @param _owner The owner of this contract.
      */
     constructor(address _proxy, TokenState _tokenState, SynthetixState _synthetixState,
-        address _owner, IExchangeRates _exchangeRates, IFeePool _feePool, SupplySchedule _supplySchedule
+        address _owner, IExchangeRates _exchangeRates, IFeePool _feePool
     )
         ExternStateToken(_proxy, _tokenState, TOKEN_NAME, TOKEN_SYMBOL, SYNTHETIX_SUPPLY, DECIMALS, _owner)
+        SupplySchedule()
         public
     {
         synthetixState = _synthetixState;
         exchangeRates = _exchangeRates;
-        feePool = IFeePool(_feePool);
-        supplySchedule = _supplySchedule;
+        feePool = _feePool;
     }
 
     // ========== SETTERS ========== */
@@ -920,15 +919,20 @@ contract Synthetix is ExternStateToken {
         external
         returns (bool)
     {
-        require(supplySchedule.isMintable(), "Last mint event is less than mintPeriodDuration");
-//        require(supplySchedule.mintableSupply() > 0, "No supply is mintable");
+        require(isMintable(), "Last mint event is less than mintPeriodDuration");
 
-        uint supplyToMint = supplySchedule.mintableSupply();
-        supplySchedule.updateMintValues();
+        uint supplyToMint = mintableSupply();
+        require(supplyToMint > 0, "No supply is mintable");
 
         // Set minted SNX balance to feePool's balance
         tokenState.setBalanceOf(feePool, tokenState.balanceOf(feePool).add(supplyToMint));
         totalSupply = totalSupply.add(supplyToMint);
+
+        // update mint values on supplySchedule[currentSchedule]
+        uint currentSchedule = getCurrentSchedule();
+        // Update schedule.totalSupplyMinted for currentSchedule
+        schedules[currentSchedule].totalSupplyMinted = schedules[currentSchedule].totalSupplyMinted.add(supplyToMint);
+        lastMintEvent = now;
     }
 
     // ========== MODIFIERS ==========
