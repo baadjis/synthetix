@@ -4,7 +4,7 @@ module.exports = {
 			host: '127.0.0.1',
 			port: 8545,
 			network_id: '*',
-			gas: 8500000,
+			gas: 8000000,
 		},
 	},
 	mocha: {
@@ -13,8 +13,7 @@ module.exports = {
 	},
 	compilers: {
 		solc: {
-			// version: './node_modules/solc', // Version is managed in package.json as an NPM dependency.
-			version: '0.4.25',
+			version: './node_modules/solc', // Version is managed in package.json as an NPM dependency.
 			settings: {
 				optimizer: {
 					enabled: true,
